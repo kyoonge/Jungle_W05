@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerMagnet : MonoBehaviour
 {
@@ -21,24 +22,29 @@ public class PlayerMagnet : MonoBehaviour
 	public LayerMask collisionLayer;
 	private Vector2 boxSize = new Vector2(2f, 2f);
 
-	private bool isPlayerMagnetActive = false;
+	[SerializeField]private bool isPlayerMagnetActive = false;
 	private bool isDownJumping = false;
 
 	[Header("HoldTime")]
 	[SerializeField] private float inputHoldTime = 1f;
 	[SerializeField] private float magnetInputHoldTime;
+
+	[Header("MagnetMove")]
+	[SerializeField]private Tween moveTween;
+	[SerializeField] private float moveDuration = 1f;
 	#endregion
 
 	#region PublicMethod
 	public void Magnet()
 	{
+		Debug.Log("PlayerMagnet On");
 		isPlayerMagnetActive = true;
 		magnetInputHoldTime = Time.time;
 		//if (anim.GetBool("jump") == true)
 		//	return;
 
 
-		//자석 끌어당기기
+		
 
 
 		//rb.AddForce(Vector2.up * magnetForce, ForceMode2D.Impulse);
@@ -50,6 +56,12 @@ public class PlayerMagnet : MonoBehaviour
     {
 		isPlayerMagnetActive = false;
 		Debug.Log("Magnet Canaeled()");
+		if (moveTween != null)
+		{
+			// Magnet이 없을 때, 이동 중인 Tween을 취소하고 위치를 즉시 멈춥니다.
+			moveTween.Kill();
+			moveTween = null;
+		}
 ;    }
 	//public void DownJump()
 	//{
@@ -77,19 +89,52 @@ public class PlayerMagnet : MonoBehaviour
 	}
 	private void Update()
 	{
-        if (isPlayerMagnetActive)
+		Magnet currentMagnet = CheckMagnet();
+
+		if(isPlayerMagnetActive)
         {
-            if (CheckMagnet()!=null)
-            {
-				magnet.CallMagnet();
-            }
+			if (currentMagnet != null)
+			{
+				Vector3 targetPosition = currentMagnet.transform.position;
 
-			if(Time.time >= magnetInputHoldTime + inputHoldTime)
-            {
+				// 이동 중인 Tween을 취소하고 새로운 Tween을 시작
+				if (moveTween != null)
+				{
+					moveTween.Kill();
+				}
+
+				// DOTween을 사용하여 오브젝트의 위치를 부드럽게 이동시킵니다.
+				moveTween = transform.DOMove(targetPosition, moveDuration)
+					.SetEase(Ease.Linear)
+					.OnComplete(() =>
+					{
+					// 이동이 완료된 후 실행할 코드
+					Debug.Log("Player reached Magnet");
+						MagnetCanceled();
+					});
+			}
+
+			if (Time.time >= magnetInputHoldTime + inputHoldTime)
+			{
 				MagnetCanceled();
-
 			}
 		}
+
+
+		
+		//      if (isPlayerMagnetActive)
+		//      {
+		//          if (CheckMagnet()!=null)
+		//          {
+		//		magnet.CallMagnet();
+		//          }
+
+		//	if(Time.time >= magnetInputHoldTime + inputHoldTime)
+		//          {
+		//		MagnetCanceled();
+
+		//	}
+		//}
 
 
 	}
@@ -154,4 +199,14 @@ public class PlayerMagnet : MonoBehaviour
 		// 디버그용으로 검출 박스를 그리는 코드 (Scene 뷰에서만 보임)
 		Gizmos.DrawWireCube(transform.position, boxSize);
 	}
+
+	private void movingMovableMagnet()
+    {
+
+    }
+
+	private void movingUnmovableMagnet()
+    {
+
+    }
 }
