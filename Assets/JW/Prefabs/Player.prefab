@@ -5029,9 +5029,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acafe90d91be3a2409a006fbbafd0837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magnetType: 1
   magnetForce: 0
-  grondCheckRayLength: 0
-  downJumpRayLength: 0
+  magnet: {fileID: 0}
+  collisionLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  boxOffset: 3
+  isPlayerMagnetActive: 0
+  inputHoldTime: 1
+  magnetInputHoldTime: 0
 --- !u!50 &8803760988626880999
 Rigidbody2D:
   serializedVersion: 4
@@ -5081,6 +5088,7 @@ GameObject:
   - component: {fileID: 8803760990524184039}
   - component: {fileID: 8803760990524184036}
   - component: {fileID: 7829354616925135411}
+  - component: {fileID: 1155565570}
   m_Layer: 0
   m_Name: Renderer
   m_TagString: Untagged
@@ -5123,7 +5131,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5192,3 +5200,19 @@ MonoBehaviour:
   damage: 3
   pointA: {x: -0.1, y: 0.5}
   pointB: {x: 1.5, y: -0.5}
+--- !u!114 &1155565570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8803760990524183962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee158225ee1e59f4791627785501d950, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shaderTypes: 0
+  normalStrength: 5
+  normalSmoothing: 1
+  computingNormal: 0

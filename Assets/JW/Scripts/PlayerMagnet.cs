@@ -75,7 +75,7 @@ public class PlayerMagnet : MonoBehaviour
 
 			if (magnet != null)
             {
-				Debug.Log(magnet.name);
+				//Debug.Log(magnet.name);
 				magnet.CallMagnet(this);
 			}
 
@@ -105,21 +105,14 @@ public class PlayerMagnet : MonoBehaviour
 			{
 				if (collider != null)
 				{
-					//// 마그넷 컴포넌트를 가진 경우
-					//float distance = Vector3.Distance(playerPosition, collider.transform.position);
-					//if (distance < closestDistance)
-					//{
-					//	closestDistance = distance;
 						curMagnet = collider.gameObject.GetComponent<Magnet>();
-					//}
-				}
-				
+				}				
 			}
 		}
 		return curMagnet;
 	}
 
-	private void OnDrawGizmos()
+	private void OnDrawGsdfjkizmos()
 	{
 		Gizmos.color = Color.red;
 		// 디버그용으로 검출 박스를 그리는 코드 (Scene 뷰에서만 보임)
