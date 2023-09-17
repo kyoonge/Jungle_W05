@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -14,13 +14,12 @@ public class PlayerMagnet : MonoBehaviour
 	private Rigidbody2D rb;
 
 	[SerializeField] private float magnetForce;
-	[SerializeField] private float grondCheckRayLength;
-	[SerializeField] private float downJumpRayLength;
 	[SerializeField] private Magnet magnet;
 
 	[Header("Raycast")]
 	public LayerMask collisionLayer;
-	private Vector2 boxSize = new Vector2(2f, 2f);
+	public float boxOffset;
+	private Vector2 boxSize;
 
 	[SerializeField]private bool isPlayerMagnetActive = false;
 	private bool isDownJumping = false;
@@ -29,9 +28,7 @@ public class PlayerMagnet : MonoBehaviour
 	[SerializeField] private float inputHoldTime = 1f;
 	[SerializeField] private float magnetInputHoldTime;
 
-	[Header("MagnetMove")]
-	[SerializeField]private Tween moveTween;
-	[SerializeField] private float moveDuration = 1f;
+
 	#endregion
 
 	#region PublicMethod
@@ -40,78 +37,46 @@ public class PlayerMagnet : MonoBehaviour
 		Debug.Log("PlayerMagnet On");
 		isPlayerMagnetActive = true;
 		magnetInputHoldTime = Time.time;
-		//if (anim.GetBool("jump") == true)
-		//	return;
-
-
-		
-
-
-		//rb.AddForce(Vector2.up * magnetForce, ForceMode2D.Impulse);
-		//Debug.Log(rb.velocity);
-		//anim.SetBool("jump", true);
 	}
 
 	public void MagnetCanceled()
     {
 		isPlayerMagnetActive = false;
-		Debug.Log("Magnet Canaeled()");
-		if (moveTween != null)
+		//Tween curTween = magnet.moveTween;
+		Debug.Log("Magnet Canceled()");
+		if (magnet != null)
 		{
-			// MagnetÀÌ ¾øÀ» ¶§, ÀÌµ¿ ÁßÀÎ TweenÀ» Ãë¼ÒÇÏ°í À§Ä¡¸¦ Áï½Ã ¸ØÃä´Ï´Ù.
-			moveTween.Kill();
-			moveTween = null;
+			magnet.ExitMagnet();
 		}
 ;    }
-	//public void DownJump()
-	//{
-	//	if (anim.GetBool("jump") == true || isDownJumping == true)
-	//		return;
 
-	//	isDownJumping = true;
-	//	//Invoke(nameof(DownJumpReady), 0.5f);
-	//	anim.SetBool("jump", true);
-	//	Vector2 origin = (Vector2)transform.position + Vector2.down * 1.5f;
-	//	RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, downJumpRayLength, 1 << LayerMask.NameToLayer("Ground"));
-	//	Debug.DrawRay(origin, Vector2.down * downJumpRayLength, Color.red);
-	//	if(hit.collider != null)
-	//	{
-	//		transform.position = new Vector2(transform.position.x, transform.position.y - 0.3f);
-	//	}
-	//}
 	#endregion
 
 	 #region PrivateMethod
+
 	private void Awake()
 	{
 		transform.Find("Renderer").TryGetComponent(out anim);
 		TryGetComponent(out rb);
 	}
-	private void Update()
+
+    private void Start()
+    {
+		boxOffset = 5f;
+		boxSize = new Vector2(2 * boxOffset, 2 * boxOffset);
+	}
+
+    private void Update()
 	{
-		Magnet currentMagnet = CheckMagnet();
 
 		if(isPlayerMagnetActive)
         {
-			if (currentMagnet != null)
-			{
-				Vector3 targetPosition = currentMagnet.transform.position;
+			magnet = CheckMagnet();
 
-				// ÀÌµ¿ ÁßÀÎ TweenÀ» Ãë¼ÒÇÏ°í »õ·Î¿î TweenÀ» ½ÃÀÛ
-				if (moveTween != null)
-				{
-					moveTween.Kill();
-				}
-
-				// DOTweenÀ» »ç¿ëÇÏ¿© ¿ÀºêÁ§Æ®ÀÇ À§Ä¡¸¦ ºÎµå·´°Ô ÀÌµ¿½ÃÅµ´Ï´Ù.
-				moveTween = transform.DOMove(targetPosition, moveDuration)
-					.SetEase(Ease.Linear)
-					.OnComplete(() =>
-					{
-					// ÀÌµ¿ÀÌ ¿Ï·áµÈ ÈÄ ½ÇÇàÇÒ ÄÚµå
-					Debug.Log("Player reached Magnet");
-						MagnetCanceled();
-					});
+			if (magnet != null)
+            {
+				Debug.Log(magnet.name);
+				magnet.CallMagnet(this);
 			}
 
 			if (Time.time >= magnetInputHoldTime + inputHoldTime)
@@ -120,83 +85,44 @@ public class PlayerMagnet : MonoBehaviour
 			}
 		}
 
-
-		
-		//      if (isPlayerMagnetActive)
-		//      {
-		//          if (CheckMagnet()!=null)
-		//          {
-		//		magnet.CallMagnet();
-		//          }
-
-		//	if(Time.time >= magnetInputHoldTime + inputHoldTime)
-		//          {
-		//		MagnetCanceled();
-
-		//	}
-		//}
-
-
 	}
-	//private void CheckMagnet()
-	//{
-	//	if(rb.velocity.y > 0)
-	//	{
-	//		return;
-	//	}
-	//	RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, grondCheckRayLength, 1 << LayerMask.NameToLayer("Magnet"));
-
-	//	Debug.DrawRay(transform.position, Vector2.down * grondCheckRayLength, Color.yellow);
-
-	//	if (hit.collider != null)
-	//	{
-	//		anim.SetBool("jump", false);
-	//	}
-	//}
-
-	//private void DownJumpReady()
-	//{
-	//	isDownJumping = false;
-	//}
 	#endregion
 
 	private Magnet CheckMagnet()
 	{
 		Magnet curMagnet = null;
-		float closestDistance = 10f;
-		Vector3 playerPosition = transform.position; // ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡
-		Vector3 boxCenter = playerPosition; // ¹Ú½ºÀÇ Áß½É À§Ä¡
+		//float closestDistance = 10f;
+		Vector3 playerPosition = transform.position; // í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜
+		Vector3 boxCenter = playerPosition; // ë°•ìŠ¤ì˜ ì¤‘ì‹¬ ìœ„ì¹˜
 
-		// ¹Ú½º¿Í ·¹ÀÌ¾î Ãæµ¹ °Ë»ç¸¦ ¼öÇàÇÕ´Ï´Ù.
-		Collider2D[] colliders = Physics2D.OverlapBoxAll(boxCenter, boxSize / 2, 0f, collisionLayer);
+		// ë°•ìŠ¤ì™€ ë ˆì´ì–´ ì¶©ëŒ ê²€ì‚¬ë¥¼ ìˆ˜í–‰í•©ë‹ˆë‹¤.
+		Collider2D[] colliders = Physics2D.OverlapBoxAll(boxCenter, boxSize, 0f, collisionLayer);
 
 		if (colliders.Length > 0)
 		{
-			// Ãæµ¹ÇÑ ¿ÀºêÁ§Æ®°¡ ÀÖ´Â °æ¿ì
+			// ì¶©ëŒí•œ ì˜¤ë¸Œì íŠ¸ê°€ ìˆëŠ” ê²½ìš°
 			foreach (Collider2D collider in colliders)
 			{
 				if (collider != null)
 				{
-					// ¸¶±×³İ ÄÄÆ÷³ÍÆ®¸¦ °¡Áø °æ¿ì
-					float distance = Vector3.Distance(playerPosition, collider.transform.position);
-					if (distance < closestDistance)
-					{
-						closestDistance = distance;
+					//// ë§ˆê·¸ë„· ì»´í¬ë„ŒíŠ¸ë¥¼ ê°€ì§„ ê²½ìš°
+					//float distance = Vector3.Distance(playerPosition, collider.transform.position);
+					//if (distance < closestDistance)
+					//{
+					//	closestDistance = distance;
 						curMagnet = collider.gameObject.GetComponent<Magnet>();
-					}
+					//}
 				}
 				
 			}
 		}
-		magnet = curMagnet;
-
 		return curMagnet;
 	}
 
 	private void OnDrawGizmos()
 	{
 		Gizmos.color = Color.red;
-		// µğ¹ö±×¿ëÀ¸·Î °ËÃâ ¹Ú½º¸¦ ±×¸®´Â ÄÚµå (Scene ºä¿¡¼­¸¸ º¸ÀÓ)
+		// ë””ë²„ê·¸ìš©ìœ¼ë¡œ ê²€ì¶œ ë°•ìŠ¤ë¥¼ ê·¸ë¦¬ëŠ” ì½”ë“œ (Scene ë·°ì—ì„œë§Œ ë³´ì„)
 		Gizmos.DrawWireCube(transform.position, boxSize);
 	}
 
