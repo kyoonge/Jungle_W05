@@ -25,7 +25,7 @@ public class PlayerMagnet : MonoBehaviour
 	private bool isDownJumping = false;
 
 	[Header("HoldTime")]
-	[SerializeField] private float inputHoldTime = 1f;
+	[SerializeField] public float inputHoldTime = 1f;
 	[SerializeField] private float magnetInputHoldTime;
 
 
@@ -41,6 +41,7 @@ public class PlayerMagnet : MonoBehaviour
 
 	public void MagnetCanceled()
     {
+		rb.gravityScale = 1;
 		isPlayerMagnetActive = false;
 		//Tween curTween = magnet.moveTween;
 		Debug.Log("Magnet Canceled()");

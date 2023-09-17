@@ -8,9 +8,10 @@ public class Magnet : MonoBehaviour
     #region PublicVariables
     [SerializeField] public Utils.MagnetType magnetType;
     public bool isMovable = false;
-    public bool tweenStart = false;
+    
 
     [Header("MagnetMove")]
+    public bool tweenStart = false;
     public Tweener moveTweener;
     private float moveDuration;
     private float playerOffset;
@@ -26,8 +27,12 @@ public class Magnet : MonoBehaviour
     int combinedLayerMask; // 두 레이어를 결합
     private float boxOffset;
     private Vector2 boxSize;
-    private Vector3 playerPosition;
+    private Vector3 collisionPosition;
     private int curDirection;
+
+    [Header("Rigidbody")]
+    public Rigidbody2D rb;
+    public float magnetForce = 10f;
 
     #endregion
     #region PrivateVariables
@@ -41,8 +46,6 @@ public class Magnet : MonoBehaviour
     }
     private void Start()
     {
-        //targetPosition = MagnetManager.Instance.player.position;
-        moveDuration = 1f;
         playerOffset = 1f;
 
         boxOffset = 0.5f;
@@ -53,9 +56,12 @@ public class Magnet : MonoBehaviour
         layerMask2 = 1 << LayerMask.NameToLayer("Ground"); // 두 번째 레이어
         combinedLayerMask = layerMask1 | layerMask2; // 두 레이어를 결합
 
+        
+
     }
     public void CallMagnet(PlayerMagnet _playerMagnet)
     {
+        moveDuration = _playerMagnet.inputHoldTime;
         if (isMovable)
         {
             movableMagnet(_playerMagnet);
@@ -70,11 +76,13 @@ public class Magnet : MonoBehaviour
 
     public void ExitMagnet()
     {
-        moveTweener.Kill();
-        moveTweener = null;
+        if(moveTweener != null)
+        {
+            moveTweener.Kill();
+            moveTweener = null;
+        }
         tweenStart = false;
-        playerPosition = transform.position + (new Vector3(0.15f, 0, 0) * curDirection);
-        Debug.Log("kill Tweener");
+        collisionPosition = transform.position + (new Vector3(0.15f, 0, 0) * curDirection);
     }
     #endregion
     #region PrivateMethod
@@ -108,20 +116,13 @@ public class Magnet : MonoBehaviour
         curDirection = Mathf.Sign(targetPosition.x - transform.position.x) > 0? 1:-1;
     }
 
-
-
-    private void unmovableMagnet(PlayerMagnet _playerMagnet)
-    {
-
-    }
-
     private void CheckTileorMagnet(PlayerMagnet _playerMagnet)
     {
         //float closestDistance = 10f;
         
         
-        playerPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection); // 플레이어의 위치
-        Vector3 boxCenter = playerPosition; // 박스의 중심 위치
+        collisionPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection); // 플레이어의 위치
+        Vector3 boxCenter = collisionPosition; // 박스의 중심 위치
         // 박스와 레이어 충돌 검사 수행
         Collider2D[] colliders = Physics2D.OverlapBoxAll(boxCenter, boxSize, 0f, combinedLayerMask);
 
@@ -150,9 +151,14 @@ public class Magnet : MonoBehaviour
     {
         Gizmos.color = Color.red;
         // 디버그용으로 검출 박스를 그리는 코드 (Scene 뷰에서만 보임)
-        Gizmos.DrawWireCube(playerPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection),boxSize); // 플레이어의 위치, boxSize);
+        Gizmos.DrawWireCube(collisionPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection),boxSize); // 플레이어의 위치, boxSize);
     }
 
-
+    private void unmovableMagnet(PlayerMagnet _playerMagnet)
+    {
+        Debug.Log("magnet jump");
+        rb = _playerMagnet.transform.GetComponent<Rigidbody2D>();
+        rb.AddForce(Vector2.up * magnetForce, ForceMode2D.Impulse);
+    }
     #endregion
 }
