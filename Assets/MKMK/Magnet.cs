@@ -12,7 +12,7 @@ public class Magnet : MonoBehaviour
 
     [Header("MagnetMove")]
     [SerializeField] public Tween moveTween;
-    public Tweener MoveTween;
+    //public Tweener MoveTween;
     private float moveDuration;
     private float playerOffset;
     [SerializeField] private Vector3 originPosition;
