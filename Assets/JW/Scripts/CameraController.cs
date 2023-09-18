@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
 	private Transform player;
 
 	//private Transform player;
-	private Utils.EStage stage;
+	private Enums.EStage stage;
 	#endregion
 
 	#region PublicMethod
@@ -27,18 +27,18 @@ public class CameraController : MonoBehaviour
 		Camera.main.transform.localPosition = Vector2.zero;
 		transform.position = respawnPoint;
 	}
-	public void MoveToStage(Utils.EStage stageNumber)
+	public void MoveToStage(Enums.EStage stageNumber)
 	{
 		Vector3 result = Vector3.zero;
 		switch(stageNumber)
 		{
-			case Utils.EStage.Stage1:
+			case Enums.EStage.Stage1:
 				result = stageCameraPosition[0];
 				break;
-			case Utils.EStage.Stage2:
+			case Enums.EStage.Stage2:
 				result = stageCameraPosition[1];
 				break;
-			case Utils.EStage.Stage3:
+			case Enums.EStage.Stage3:
 				result = stageCameraPosition[2];
 				break;
 		}
@@ -57,14 +57,14 @@ public class CameraController : MonoBehaviour
 		shaker.StartCameraShake(CameraShaker.ECameraShakingType.thunder);
 	}
 
-	public void StartFollowToPlayer(Utils.EStage _stage)
+	public void StartFollowToPlayer(Enums.EStage _stage)
     {
 		stage = _stage;
     }
 
 	public void EndFollowToPlayer()
     {
-		stage = Utils.EStage.main;
+		stage = Enums.EStage.main;
     }
 	#endregion
 
@@ -83,11 +83,11 @@ public class CameraController : MonoBehaviour
 	}
     private void FollowToPlayer()
     {
-		if (stage == Utils.EStage.title 
-			|| stage == Utils.EStage.main)
+		if (stage == Enums.EStage.title 
+			|| stage == Enums.EStage.main)
 			return;
 
-        if (stage == Utils.EStage.Stage1)
+        if (stage == Enums.EStage.Stage1)
         {
 			Vector3 cameraPos = defaultCameraPosition;
 			float posY = Mathf.Clamp(player.position.y + offsetY, 4f, 6f);
@@ -95,7 +95,7 @@ public class CameraController : MonoBehaviour
 			cameraPos.z = -10;
 			transform.position = cameraPos;
 		}
-		else if(stage == Utils.EStage.Stage2)
+		else if(stage == Enums.EStage.Stage2)
 		{
 			Vector3 cameraPos = defaultCameraPosition;
 			float posX = Mathf.Clamp(player.position.x, -45f, -40f);
@@ -105,7 +105,7 @@ public class CameraController : MonoBehaviour
 			cameraPos.z = -10;
 			transform.position = cameraPos;
 		}
-		else if(stage == Utils.EStage.Stage3)
+		else if(stage == Enums.EStage.Stage3)
 		{
 			Vector3 cameraPos = defaultCameraPosition;
 			float posY = Mathf.Clamp(player.position.y + offsetY, -18.5f, -10f);

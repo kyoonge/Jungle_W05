@@ -8,7 +8,7 @@ public class StageEnterTrigger : MonoBehaviour
 	#endregion
 
 	#region PrivateVariables
-	[SerializeField] private Utils.EStage targetStage;
+	[SerializeField] private Enums.EStage targetStage;
 	#endregion
 
 	#region PublicMethod

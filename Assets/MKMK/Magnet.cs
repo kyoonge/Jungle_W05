@@ -6,7 +6,7 @@ using DG.Tweening;
 public class Magnet : MonoBehaviour
 {
     #region PublicVariables
-    [SerializeField] public Utils.MagnetType magnetType;
+    [SerializeField] public Enums.MagnetType magnetType;
     public bool isMovable = false;
     
 
@@ -18,6 +18,13 @@ public class Magnet : MonoBehaviour
     [SerializeField] private Vector3 originPosition;
     [SerializeField] private Vector3 targetPosition;
     [SerializeField] private int targetDirection;
+
+    [Header("MagnetButton")]
+    public bool buttonTweenStart = false;
+    public Tweener buttonTweener;
+    [SerializeField] private float buttonDuration = 3f;
+    public float jumpHeight =2; // 원하는 점프 높이
+    private float gravity = 9.8f; // 중력 가속도
 
     [Header("Raycast")]
     public LayerMask collisionTileLayer;
@@ -32,14 +39,15 @@ public class Magnet : MonoBehaviour
 
     [Header("Rigidbody")]
     public Rigidbody2D rb;
-    public float magnetForce = 10f;
+    public Rigidbody2D playerRb;
+    public float magnetForce = 1f;
 
     #endregion
     #region PrivateVariables
     #endregion
     #region PublicMethod
 
-    public Magnet(Utils.MagnetType _magnetType, bool _isMovable)
+    public Magnet(Enums.MagnetType _magnetType, bool _isMovable)
     {
         this.magnetType = _magnetType;
         this.isMovable = _isMovable;
@@ -56,9 +64,10 @@ public class Magnet : MonoBehaviour
         layerMask2 = 1 << LayerMask.NameToLayer("Ground"); // 두 번째 레이어
         combinedLayerMask = layerMask1 | layerMask2; // 두 레이어를 결합
 
-        
+        playerRb = MagnetManager.Instance.player.GetComponent<Rigidbody2D>();
 
     }
+
     public void CallMagnet(PlayerMagnet _playerMagnet)
     {
         moveDuration = _playerMagnet.inputHoldTime;
@@ -68,10 +77,13 @@ public class Magnet : MonoBehaviour
             //박스 충돌 검사
             CheckTileorMagnet(_playerMagnet);
         }
-        else
-        {
-            unmovableMagnet(_playerMagnet);
-        }
+       
+    }
+    public void CallMagnetButton(PlayerMagnet _playerMagnet)
+    {
+        Debug.Log("callmagnetButton");
+        UnmovableMagnet(_playerMagnet);
+        //CheckPlayerOnButton(_playerMagnet);
     }
 
     public void ExitMagnet()
@@ -81,6 +93,15 @@ public class Magnet : MonoBehaviour
             moveTweener.Kill();
             moveTweener = null;
         }
+        //if (buttonTweener != null)
+        //{
+        //    buttonTweener.Kill();
+        //    buttonTweener = null;
+        //}
+        playerRb.velocity = Vector2.zero;
+        playerRb.gravityScale = 3;
+        buttonTweenStart = false;
+        Debug.Log("buttonTweenStart false");
         tweenStart = false;
         collisionPosition = transform.position + (new Vector3(0.15f, 0, 0) * curDirection);
     }
@@ -119,8 +140,6 @@ public class Magnet : MonoBehaviour
     private void CheckTileorMagnet(PlayerMagnet _playerMagnet)
     {
         //float closestDistance = 10f;
-        
-        
         collisionPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection); // 플레이어의 위치
         Vector3 boxCenter = collisionPosition; // 박스의 중심 위치
         // 박스와 레이어 충돌 검사 수행
@@ -131,8 +150,10 @@ public class Magnet : MonoBehaviour
             // 충돌한 오브젝트가 있는 경우
             foreach (Collider2D collider in colliders)
             {
+                // 본인 제외
                 if (collider != null && collider.gameObject != this.gameObject)
                 {
+                    //본인과 상대 DoTween 중지
                     Debug.Log(this.gameObject +"  "+collider.gameObject);
                     moveTweener.Kill();
                     _playerMagnet.MagnetCanceled();
@@ -147,18 +168,45 @@ public class Magnet : MonoBehaviour
             }
         }
     }
+
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         // 디버그용으로 검출 박스를 그리는 코드 (Scene 뷰에서만 보임)
-        Gizmos.DrawWireCube(collisionPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection),boxSize); // 플레이어의 위치, boxSize);
+        Gizmos.DrawWireCube(collisionPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection),boxSize); //박스 오브젝트용
     }
 
-    private void unmovableMagnet(PlayerMagnet _playerMagnet)
+    private void UnmovableMagnet(PlayerMagnet _playerMagnet)
     {
-        Debug.Log("magnet jump");
-        rb = _playerMagnet.transform.GetComponent<Rigidbody2D>();
-        rb.AddForce(Vector2.up * magnetForce, ForceMode2D.Impulse);
+        Debug.Log("unmovableMagnet");
+        if (buttonTweenStart == true)
+        {
+            if(playerRb.velocity.y <= 0)
+            {
+                playerRb.gravityScale = 0;
+                Debug.Log("gravity = 0");
+            }
+            return;
+        }
+        else
+        {
+            float jumpTime = Mathf.Sqrt((2 * jumpHeight) / 9.8f);
+            // 점프하는 방향과 힘 계산
+            Vector2 jumpForce = playerRb.mass * (Vector2.up * 9.8f) / jumpTime;
+            // AddForce로 점프
+            playerRb.AddForce(jumpForce, ForceMode2D.Impulse);
+            Debug.Log("jump");
+
+            buttonTweenStart = true;
+        }
+
+        Debug.Log("속도: " + playerRb.velocity.y + " 높이: " + jumpHeight);
     }
+
+    
+    
+
+
     #endregion
 }

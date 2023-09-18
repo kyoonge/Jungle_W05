@@ -167,7 +167,7 @@ public class Player : MonoBehaviour
 			return;
 
 		Debug.Log("magnet on");
-		magnet.Magnet();
+		magnet.Magnet(); //playerMagnet
 	}
 	private void MagnetCanceled(InputAction.CallbackContext _context)
 	{

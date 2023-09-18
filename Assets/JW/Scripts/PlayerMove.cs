@@ -30,7 +30,7 @@ public class PlayerMove : MonoBehaviour
 	#region PrivateMethod
 	private void Awake()
 	{
-		transform.Find("Renderer").TryGetComponent(out anim);
+		transform.Find("@Renderer").TryGetComponent(out anim);
 		TryGetComponent(out rb);
 	}
 	private void Update()

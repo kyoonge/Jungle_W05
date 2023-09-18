@@ -49,7 +49,7 @@ public class PlayerDodge : MonoBehaviour
 	#region PrivateMethod
 	private void Awake()
 	{
-		transform.Find("Renderer").TryGetComponent(out anim);
+		transform.Find("@Renderer").TryGetComponent(out anim);
 		TryGetComponent(out rb);
 		TryGetComponent(out main);
 	}

@@ -6,7 +6,7 @@ using DG.Tweening;
 public class PlayerMagnet : MonoBehaviour
 {
 	#region PublicVariables
-	[SerializeField] public Utils.MagnetType magnetType;
+	[SerializeField] public Enums.MagnetType magnetType;
 	#endregion
 
 	#region PrivateVariables
@@ -14,12 +14,16 @@ public class PlayerMagnet : MonoBehaviour
 	private Rigidbody2D rb;
 
 	[SerializeField] private float magnetForce;
+	private Magnet m_curMagnet;
 	[SerializeField] private Magnet magnet;
 
 	[Header("Raycast")]
 	public LayerMask collisionLayer;
 	public float boxOffset;
 	private Vector2 boxSize;
+	private float buttonCheckRayLength = 1f;
+	[SerializeField] private bool canButtonJump = false;
+
 
 	[SerializeField]private bool isPlayerMagnetActive = false;
 	private bool isDownJumping = false;
@@ -41,13 +45,16 @@ public class PlayerMagnet : MonoBehaviour
 
 	public void MagnetCanceled()
     {
-		rb.gravityScale = 1;
+		rb.gravityScale = 3;
 		isPlayerMagnetActive = false;
 		//Tween curTween = magnet.moveTween;
-		Debug.Log("Magnet Canceled()");
+		canButtonJump = false;
+		
 		if (magnet != null)
 		{
+			Debug.Log("Magnet Canceled()");
 			magnet.ExitMagnet();
+			magnet = null;
 		}
 ;    }
 
@@ -57,7 +64,7 @@ public class PlayerMagnet : MonoBehaviour
 
 	private void Awake()
 	{
-		transform.Find("Renderer").TryGetComponent(out anim);
+		transform.Find("@Renderer").TryGetComponent(out anim);
 		TryGetComponent(out rb);
 	}
 
@@ -65,6 +72,7 @@ public class PlayerMagnet : MonoBehaviour
     {
 		boxOffset = 5f;
 		boxSize = new Vector2(2 * boxOffset, 2 * boxOffset);
+		buttonCheckRayLength = 1f;
 	}
 
     private void Update()
@@ -72,13 +80,19 @@ public class PlayerMagnet : MonoBehaviour
 
 		if(isPlayerMagnetActive)
         {
-			magnet = CheckMagnet();
+			m_curMagnet = CheckMagnet();
+			CheckButton();
 
-			if (magnet != null)
+			//if (m_curMagnet != null)
+   //         {
+			//	magnet = m_curMagnet;
+			//	magnet.CallMagnet(this);
+			//}
+            if (canButtonJump == true)
             {
-				//Debug.Log(magnet.name);
-				magnet.CallMagnet(this);
-			}
+				magnet.CallMagnetButton(this);
+				KeepCheckButton();
+            }
 
 			if (Time.time >= magnetInputHoldTime + inputHoldTime)
 			{
@@ -106,27 +120,65 @@ public class PlayerMagnet : MonoBehaviour
 			{
 				if (collider != null)
 				{
+                    if (collider.CompareTag("MagnetObject"))
+                    {
 						curMagnet = collider.gameObject.GetComponent<Magnet>();
+						magnet = curMagnet;
+						magnet.CallMagnet(this);
+					}
+
 				}				
 			}
 		}
 		return curMagnet;
 	}
 
-	private void OnDrawGsdfjkizmos()
+	private void OnDrawGizmos()
 	{
 		Gizmos.color = Color.red;
 		// 디버그용으로 검출 박스를 그리는 코드 (Scene 뷰에서만 보임)
 		Gizmos.DrawWireCube(transform.position, boxSize);
 	}
 
-	private void movingMovableMagnet()
+	private void CheckButton()
+	{
+        if (rb.velocity.y > 0)
+        {
+            return;
+        }
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, buttonCheckRayLength, 1 << LayerMask.NameToLayer("Magnet"));
+        Debug.DrawRay(transform.position, Vector2.down * buttonCheckRayLength, Color.yellow);
+        if(hit.collider != null)
+        {
+			if (hit.collider.CompareTag("MagnetButton"))
+			{
+				canButtonJump = true;
+				print("magnet button");
+				magnet = hit.collider.transform.GetComponent<Magnet>();
+				//magnet.CallMagnetButton(this);
+			}
+		}
+
+	}
+
+	private void KeepCheckButton()
     {
+		RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, Vector2.down, 10f, 1 << LayerMask.NameToLayer("Magnet"));
+		Debug.DrawRay(transform.position, Vector2.down * 10f, Color.blue);
+		bool isButtonExist = false;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i].transform.CompareTag("MagnetButton"))
+            {
+				isButtonExist = true;
+				break;
+            }
+        }
 
-    }
+        if (!isButtonExist)
+        {
+			MagnetCanceled();
+        }
+	}
 
-	private void movingUnmovableMagnet()
-    {
-
-    }
 }

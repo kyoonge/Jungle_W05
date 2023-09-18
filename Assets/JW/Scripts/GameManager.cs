@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
 	{
 		player.CanAct();
 	}
-	public void BattleStart(Utils.EStage _stage)
+	public void BattleStart(Enums.EStage _stage)
 	{
 		state = EGameState.battle;
 		boss = bossList[(int)_stage - 1];

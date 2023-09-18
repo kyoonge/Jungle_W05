@@ -28,7 +28,7 @@ public class PlayerAttack : MonoBehaviour
 	#region PrivateMethod
 	private void Awake()
 	{
-		transform.Find("Renderer").TryGetComponent(out anim);
+		transform.Find("@Renderer").TryGetComponent(out anim);
 	}
 
     private void Update()

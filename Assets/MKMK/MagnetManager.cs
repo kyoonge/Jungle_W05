@@ -29,7 +29,6 @@ public class MagnetManager : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.FindWithTag("Player").transform;
     }
     #endregion
 }
