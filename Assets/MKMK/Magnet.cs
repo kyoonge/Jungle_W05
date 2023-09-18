@@ -57,7 +57,7 @@ public class Magnet : MonoBehaviour
         playerOffset = 1f;
 
         boxOffset = 0.5f;
-        boxSize = new Vector2(2 * boxOffset, 4 * boxOffset);
+        boxSize = new Vector2(2 * boxOffset, 3 * boxOffset);
 
         // 레이어 마스크 생성 및 결합
         layerMask1 = 1 << LayerMask.NameToLayer("Magnet"); // 첫 번째 레이어
@@ -82,7 +82,11 @@ public class Magnet : MonoBehaviour
     public void CallMagnetButton(PlayerMagnet _playerMagnet)
     {
         Debug.Log("callmagnetButton");
-        UnmovableMagnet(_playerMagnet);
+        if(_playerMagnet.magnetType == magnetType)
+        {
+            UnmovableMagnet(_playerMagnet);
+        }
+        
         //CheckPlayerOnButton(_playerMagnet);
     }
 
@@ -174,17 +178,19 @@ public class Magnet : MonoBehaviour
     {
         Gizmos.color = Color.red;
         // 디버그용으로 검출 박스를 그리는 코드 (Scene 뷰에서만 보임)
-        Gizmos.DrawWireCube(collisionPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection),boxSize); //박스 오브젝트용
+        Gizmos.DrawWireCube(collisionPosition = transform.position + (new Vector3(0.15f, 0f, 0) * curDirection),boxSize); //박스 오브젝트용
     }
 
     private void UnmovableMagnet(PlayerMagnet _playerMagnet)
     {
+        playerRb = MagnetManager.Instance.player.GetComponent<Rigidbody2D>();
         Debug.Log("unmovableMagnet");
         if (buttonTweenStart == true)
         {
             if(playerRb.velocity.y <= 0)
             {
                 playerRb.gravityScale = 0;
+                //transform.DOShakePosition(0.2, 0.1, 0.1);
                 Debug.Log("gravity = 0");
             }
             return;
@@ -193,12 +199,15 @@ public class Magnet : MonoBehaviour
         {
             float jumpTime = Mathf.Sqrt((2 * jumpHeight) / 9.8f);
             // 점프하는 방향과 힘 계산
-            Vector2 jumpForce = playerRb.mass * (Vector2.up * 9.8f) / jumpTime;
+            Vector2 jumpForce = 1 * (Vector2.up * 9.8f) / jumpTime;
             // AddForce로 점프
+            Debug.Log("jumpForce: "+jumpForce);
             playerRb.AddForce(jumpForce, ForceMode2D.Impulse);
-            Debug.Log("jump");
+            //playerRb.AddForce(new Vector2(0,10f), ForceMode2D.Impulse);
 
             buttonTweenStart = true;
+
+            
         }
 
         Debug.Log("속도: " + playerRb.velocity.y + " 높이: " + jumpHeight);

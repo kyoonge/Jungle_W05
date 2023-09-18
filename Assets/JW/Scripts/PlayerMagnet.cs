@@ -78,6 +78,7 @@ public class PlayerMagnet : MonoBehaviour
     private void Update()
 	{
 
+
 		if(isPlayerMagnetActive)
         {
 			m_curMagnet = CheckMagnet();

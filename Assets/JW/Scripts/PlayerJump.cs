@@ -63,7 +63,10 @@ public class PlayerJump : MonoBehaviour
 		{
 			return;
 		}
-		RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, grondCheckRayLength, 1 << LayerMask.NameToLayer("Ground"));
+		//RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, grondCheckRayLength, 1 << LayerMask.NameToLayer("Ground"));
+		int groundAndMagnetLayerMask = (1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Magnet"));
+		RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.down, grondCheckRayLength, groundAndMagnetLayerMask);
+
 		Debug.DrawRay(transform.position, Vector2.down * grondCheckRayLength, Color.red);
 
 		if (hit.collider != null)
