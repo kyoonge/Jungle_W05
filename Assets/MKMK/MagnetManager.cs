@@ -8,6 +8,7 @@ public class MagnetManager : MonoBehaviour
 
     #region PublicVariables
     public Transform player;
+    public PlayerMagnet playerMagnet;
     #endregion
     #region PrivateVariables
     #endregion
@@ -29,6 +30,8 @@ public class MagnetManager : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1;
+        player.GetComponent<Player>().canAct = true;
     }
     #endregion
 }

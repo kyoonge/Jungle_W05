@@ -17,7 +17,7 @@ public class FadeBlackController : MonoBehaviour
     private void Start()
     {
 		cameraTransfom = Camera.main.transform;
-		player = GameManager.instance.GetPlayer().transform;
+		//player = GameManager.instance.GetPlayer().transform;
     }
 
 	public void StartFade()
@@ -29,7 +29,7 @@ public class FadeBlackController : MonoBehaviour
 		transform.DOLocalMoveX(fadeMiddlePositionX, fadeTime)
 			.OnComplete(() =>
 			{
-				GameManager.instance.GetPlayer().MoveToRespawnPoint();
+				//GameManager.instance.GetPlayer().MoveToRespawnPoint();
 				CameraController.instance.MoveToRespawnPoint();
 				GameManager.instance.GetPlayer().transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
 				transform.DOLocalMoveX(fadeEndPositionX, fadeTime)

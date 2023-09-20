@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GamePauseUI : MonoBehaviour
 {
@@ -49,6 +50,11 @@ public class GamePauseUI : MonoBehaviour
         Application.Quit();
 #endif
 	}
+
+    public void GameRestart()
+    {
+        SceneManager.LoadScene(0);
+    }
 
 	private void Pause(InputAction.CallbackContext _context)
     {

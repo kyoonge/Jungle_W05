@@ -23,7 +23,7 @@ public class Magnet : MonoBehaviour
     public bool buttonTweenStart = false;
     public Tweener buttonTweener;
     [SerializeField] private float buttonDuration = 3f;
-    public float jumpHeight =2; // 원하는 점프 높이
+    public float jumpHeight =3; // 원하는 점프 높이
     private float gravity = 9.8f; // 중력 가속도
 
     [Header("Raycast")]
@@ -144,7 +144,7 @@ public class Magnet : MonoBehaviour
     private void CheckTileorMagnet(PlayerMagnet _playerMagnet)
     {
         //float closestDistance = 10f;
-        collisionPosition = transform.position + (new Vector3(0.15f, 0.15f, 0) * curDirection); // 플레이어의 위치
+        collisionPosition = transform.position + (new Vector3(0.2f, 0f, 0) * curDirection); // 플레이어의 위치
         Vector3 boxCenter = collisionPosition; // 박스의 중심 위치
         // 박스와 레이어 충돌 검사 수행
         Collider2D[] colliders = Physics2D.OverlapBoxAll(boxCenter, boxSize, 0f, combinedLayerMask);

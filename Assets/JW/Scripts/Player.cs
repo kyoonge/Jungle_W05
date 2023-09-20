@@ -20,7 +20,8 @@ public class Player : MonoBehaviour
 	private PlayerMove move;
 	private PlayerJump jump;
 	private PlayerAttack attack;
-	private PlayerMagnet magnet;
+	public PlayerMagnet magnet;
+	public GameObject effect;
 
 	private bool isInvincible;
 	[SerializeField] private bool isPressedDown;
@@ -83,12 +84,12 @@ public class Player : MonoBehaviour
 		input.Enable();
 		input.Player.Move.performed += Move;
 		input.Player.Move.canceled += MoveCanceled;
-		input.Player.Attack.performed += Attack;
-		input.Player.Attack.canceled += AttackCanceled;
+		//input.Player.Attack.performed += Attack;
+		//input.Player.Attack.canceled += AttackCanceled;
 		input.Player.Dodge.performed += Dodge;
 		input.Player.Jump.performed += Jump;
 		input.Player.Down.performed += Down;
-		input.Player.Down.canceled += DownCanceled;
+		//input.Player.Down.canceled += DownCanceled;
 		input.Player.Magnet.performed += Magnet;
 		input.Player.Magnet.canceled += MagnetCanceled;
 
@@ -97,12 +98,12 @@ public class Player : MonoBehaviour
 	{
 		input.Player.Move.performed -= Move;
 		input.Player.Move.canceled -= MoveCanceled;
-		input.Player.Attack.performed -= Attack;
-		input.Player.Attack.canceled -= AttackCanceled;
+		//input.Player.Attack.performed -= Attack;
+		//input.Player.Attack.canceled -= AttackCanceled;
 		input.Player.Dodge.performed -= Dodge;
 		input.Player.Jump.performed -= Jump;
 		input.Player.Down.performed -= Down;
-		input.Player.Down.canceled -= DownCanceled;
+		//input.Player.Down.canceled -= DownCanceled;
 		input.Player.Magnet.performed -= Magnet;
 		input.Player.Magnet.canceled -= MagnetCanceled;
 		input.Disable();
@@ -147,14 +148,12 @@ public class Player : MonoBehaviour
 	{
 		if (canAct == false)
 			return;
-		attack.isAttack = false;
 		dodge.Dodge();
 	}
 	private void Down(InputAction.CallbackContext _context)
 	{
 		if (canAct == false)
 			return;
-		isPressedDown = true;
 	}
 	private void DownCanceled(InputAction.CallbackContext _context)
 	{
@@ -166,11 +165,13 @@ public class Player : MonoBehaviour
 		if (canAct == false)
 			return;
 
+		effect.SetActive(true);
 		Debug.Log("magnet on");
 		magnet.Magnet(); //playerMagnet
 	}
 	private void MagnetCanceled(InputAction.CallbackContext _context)
 	{
+		effect.SetActive(false);
 		magnet.MagnetCanceled();
 	}
 

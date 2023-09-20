@@ -12,6 +12,7 @@ public class PlayerMagnet : MonoBehaviour
 	#region PrivateVariables
 	private Animator anim;
 	private Rigidbody2D rb;
+	public GameObject effect;
 
 	[SerializeField] private float magnetForce;
 	private Magnet m_curMagnet;
@@ -45,6 +46,7 @@ public class PlayerMagnet : MonoBehaviour
 
 	public void MagnetCanceled()
     {
+		effect.SetActive(false);
 		rb.gravityScale = 3;
 		isPlayerMagnetActive = false;
 		//Tween curTween = magnet.moveTween;
@@ -84,11 +86,6 @@ public class PlayerMagnet : MonoBehaviour
 			m_curMagnet = CheckMagnet();
 			CheckButton();
 
-			//if (m_curMagnet != null)
-   //         {
-			//	magnet = m_curMagnet;
-			//	magnet.CallMagnet(this);
-			//}
             if (canButtonJump == true)
             {
 				magnet.CallMagnetButton(this);
@@ -116,6 +113,7 @@ public class PlayerMagnet : MonoBehaviour
 
 		if (colliders.Length > 0)
 		{
+			float closestDistance = float.MaxValue;
 			// 충돌한 오브젝트가 있는 경우
 			foreach (Collider2D collider in colliders)
 			{
@@ -123,8 +121,29 @@ public class PlayerMagnet : MonoBehaviour
 				{
                     if (collider.CompareTag("MagnetObject"))
                     {
-						curMagnet = collider.gameObject.GetComponent<Magnet>();
-						magnet = curMagnet;
+						//curMagnet = collider.gameObject.GetComponent<Magnet>();
+						//magnet = curMagnet;
+						//magnet.CallMagnet(this);
+
+						if(magnet!= null)
+                        {
+							float distance1 = Vector3.Distance(playerPosition, collider.gameObject.transform.position);
+							float distance2 = Vector3.Distance(playerPosition, magnet.transform.position);
+
+							if (distance1 <= distance2)
+							{
+								curMagnet = collider.gameObject.GetComponent<Magnet>();
+								magnet = curMagnet;
+							}
+						}
+                        else
+                        {
+							curMagnet = collider.gameObject.GetComponent<Magnet>();
+							magnet = curMagnet;
+						}
+
+					
+						
 						magnet.CallMagnet(this);
 					}
 
